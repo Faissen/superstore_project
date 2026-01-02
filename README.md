@@ -15,6 +15,72 @@ The analysis focuses on understanding:
 
 This project demonstrates end‑to‑end data engineering and analytics skills using real‑world data.
 
+Data Modeling Decisions
+This project required designing a relational database schema from a raw CSV file. The goal was to create a clean, normalized structure that supports efficient querying, ensures data integrity, and reflects real‑world analytical workflows. Below is a summary of the key modeling decisions and the reasoning behind each one.
+
+1. Use of Separate Dimension and Fact Tables
+The dataset contains repeated information about customers, products, and geographic locations. To avoid redundancy and improve query performance, the data was normalized into:
+- Dimension tables: customers, products, regions
+- Fact table: order_items
+- Context table: orders
+
+This structure resembles a simplified star schema, commonly used in analytics and BI environments. It allows for fast aggregations and clear relationships between entities.
+
+2. Keeping row_id as the Primary Key in order_items
+Although order_id and product_id could form a composite key, the dataset includes a unique row_id for each line item. Keeping it as the primary key provides several advantages:
+- Simplifies the ETL process
+- Guarantees uniqueness without relying on composite keys
+- Makes debugging and referencing individual rows easier
+- Reflects the structure of the original dataset
+
+This choice improves maintainability without compromising relational integrity.
+
+3. Using SERIAL for region_id
+The dataset does not include a natural unique identifier for geographic locations. To ensure each region entry is uniquely identifiable, an artificial key was created. Reasons for this choice:
+- Avoids relying on combinations of city/state/region
+- Simplifies foreign key relationships
+- Ensures consistency even if location names change or contain duplicates
+
+Artificial keys are a standard practice when natural keys are unavailable or unstable.
+
+4. Choosing Between VARCHAR(n) and TEXT
+The schema uses a mix of VARCHAR(n) and TEXT, depending on the nature of each field. 
+Fields such as customer_id, product_id, category, and product_name have predictable maximum lengths. Setting a limit (VARCHAR(n)):
+- Documents the expected size of the field
+- Prevents accidental insertion of malformed or excessively long values
+- Makes the schema more explicit and self‑describing
+
+For example product_name VARCHAR(255):
+The limit of 255 characters was chosen after inspecting the dataset and confirming that no product name exceeded this length. This is a common and safe convention in database design.
+
+Although PostgreSQL treats VARCHAR(n) and TEXT similarly in performance, TEXT was avoided for descriptive fields because:
+- It removes constraints on data quality
+- It makes the schema less explicit
+- It can lead to inconsistent data entry in real‑world scenarios
+
+
+5. Use of Foreign Keys to Enforce Integrity, to ensure that:
+- Every order references a valid customer
+- Every order references a valid region
+- Every order item references a valid order
+- Every order item references a valid product
+
+This prevents orphan records and maintains referential integrity across the database, even as data grows.
+
+6. Date Fields Stored as DATE
+order_date and ship_date were stored as DATE instead of TEXT to:
+- Enable date arithmetic (delivery time, monthly trends, etc.)
+- Improve query performance
+- Ensure correct sorting and filtering
+
+The ETL pipeline handles the conversion from string to date format.
+
+7. Numeric Fields Stored as NUMERIC(10,2)
+Sales values were stored using NUMERIC(10,2). This ensures:
+- Accurate decimal representation
+- No floating‑point rounding errors
+- Compatibility with financial calculations
+
 Results
 The analysis uncovered several key insights:
 

@@ -1,4 +1,5 @@
 Project Goal
+
 The objective of this project is to analyze sales performance, customer behavior, and product trends using the Superstore dataset from Kaggle (www.kaggle.com/datasets/rohitsahoo/sales-forecasting).
 
 The project follows a full data‑analytics workflow:
@@ -19,23 +20,12 @@ Data Modeling Decisions
 This project required designing a relational database schema from a raw CSV file. The goal was to create a clean, normalized structure that supports efficient querying, ensures data integrity, and reflects real‑world analytical workflows. Below is a summary of the key modeling decisions and the reasoning behind each one.
 
 1. Use of Separate Dimension and Fact Tables
-The dataset contains repeated information about customers, products, and geographic locations. To avoid redundancy and improve query performance, the data was normalized into:
-- Dimension tables: customers, products, regions
-- Fact table: order_items
-- Context table: orders
+The dataset contains repeated information about customers, products, and geographic locations. To avoid redundancy and improve query performance, the data was normalized based on a star schema into:
+- Dimension tables: customers, products, regions, dates, ship modes
+- Fact table sales
+- Star Schema (https://github.com/Faissen/superstore_project/blob/main/images/Entity%20Relationship%20Diagram_StarSchema_superstore.png) - it allows for fast aggregations and clear relationships between entities.
 
-This structure resembles a simplified star schema, commonly used in analytics and BI environments. It allows for fast aggregations and clear relationships between entities.
-
-2. Keeping row_id as the Primary Key in order_items
-Although order_id and product_id could form a composite key, the dataset includes a unique row_id for each line item. Keeping it as the primary key provides several advantages:
-- Simplifies the ETL process
-- Guarantees uniqueness without relying on composite keys
-- Makes debugging and referencing individual rows easier
-- Reflects the structure of the original dataset
-
-This choice improves maintainability without compromising relational integrity.
-
-3. Using SERIAL for region_id
+2. Using SERIAL for region_id
 The dataset does not include a natural unique identifier for geographic locations. To ensure each region entry is uniquely identifiable, an artificial key was created. Reasons for this choice:
 - Avoids relying on combinations of city/state/region
 - Simplifies foreign key relationships
@@ -43,7 +33,7 @@ The dataset does not include a natural unique identifier for geographic location
 
 Artificial keys are a standard practice when natural keys are unavailable or unstable.
 
-4. Choosing Between VARCHAR(n) and TEXT
+3. Choosing Between VARCHAR(n) and TEXT
 The schema uses a mix of VARCHAR(n) and TEXT, depending on the nature of each field. 
 Fields such as customer_id, product_id, category, and product_name have predictable maximum lengths. Setting a limit (VARCHAR(n)):
 - Documents the expected size of the field
@@ -59,7 +49,7 @@ Although PostgreSQL treats VARCHAR(n) and TEXT similarly in performance, TEXT wa
 - It can lead to inconsistent data entry in real‑world scenarios
 
 
-5. Use of Foreign Keys to Enforce Integrity, to ensure that:
+4. Use of Foreign Keys to Enforce Integrity, to ensure that:
 - Every order references a valid customer
 - Every order references a valid region
 - Every order item references a valid order
@@ -67,7 +57,7 @@ Although PostgreSQL treats VARCHAR(n) and TEXT similarly in performance, TEXT wa
 
 This prevents orphan records and maintains referential integrity across the database, even as data grows.
 
-6. Date Fields Stored as DATE
+5. Date Fields Stored as DATE
 order_date and ship_date were stored as DATE instead of TEXT to:
 - Enable date arithmetic (delivery time, monthly trends, etc.)
 - Improve query performance
@@ -75,7 +65,7 @@ order_date and ship_date were stored as DATE instead of TEXT to:
 
 The ETL pipeline handles the conversion from string to date format.
 
-7. Numeric Fields Stored as NUMERIC(10,2)
+6. Numeric Fields Stored as NUMERIC(10,2)
 Sales values were stored using NUMERIC(10,2). This ensures:
 - Accurate decimal representation
 - No floating‑point rounding errors

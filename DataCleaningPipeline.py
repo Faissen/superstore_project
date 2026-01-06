@@ -10,11 +10,12 @@ Class DataCleaner:
 
     def snake_case_columns(self,df):
         # Convert all column names to snake_case.
-        for col in df.columns:
-            df.col = (df.col
+        df.columns = (df.columns
                       .str.strip() # Remove spaces from the beginning and end
                       .str.lower() # Convert to lowercase
-                      .str.replace([" ","-"], "_") # Replace spaces and hyphens with underscores
+                      .str.replace(" ", "_") # Replace spaces with underscores
+                      .str.replace("-", "_") # Replace hyphens with underscores
+         ) 
         return df
 
 #Join everything

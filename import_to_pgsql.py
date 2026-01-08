@@ -21,13 +21,29 @@ conn = psycopg2.connect(
 cur = conn.cursor() # Create a cursor object
 
 # Insert data into PostgreSQL
-# Tables
+# Dictionary mapping table names to their respective columns
 tables = {
-    "":[],
-    
+    "dim_customer":["customer_id", "customer_name", "segment"],
+    "dim_product":["product_id", "product_name", "category", "sub_category"],
+    "dim_region":["region_id", "country", "state", "city", "postal_code", "region"],
+    "dim_ship_mode":["ship_mode_id", "ship_mode"],
+    "dim_date":["date_id", "year", "quarter", "month", "day", "weekday", "order_date", "ship_date"],
+    "fact_sales":["row_id", "order_id", "product_id","sales", "region_id", "customer_id","region_id",
+                  "date_id", "ship_mode_id"],
 }
 
-
+def insert_data(table, columns, df):
+    # Create the INSERT INTO SQL query
+    cols = ",".join(columns).strip() # Column names for the query, remove any extra spaces
+    placeholders = ", ".join(["%s"] * len(columns)) # Placeholder for parameterized query
+    return (f"INSERT INTO {table} ({cols}) 
+                    VALUES ({placeholders})
+                    ON CONFLICT DO NOTHING;") # Handle conflicts by doing nothing
+    
+# Insert each row into the table
+for _, row in df.iterrows():
+        values = [row[col] for col in columns]
+        cur.execute(insert_query, values)
 # Commit changes and close the connection
 conn.commit() # Commit the transaction
 cur.close() # Close the cursor

@@ -28,22 +28,28 @@ tables = {
     "dim_region":["region_id", "country", "state", "city", "postal_code", "region"],
     "dim_ship_mode":["ship_mode_id", "ship_mode"],
     "dim_date":["date_id", "year", "quarter", "month", "day", "weekday", "order_date", "ship_date"],
-    "fact_sales":["row_id", "order_id", "product_id","sales", "region_id", "customer_id","region_id",
+    "fact_sales":["row_id", "order_id", "product_id","sales", "customer_id","region_id",
                   "date_id", "ship_mode_id"],
 }
 
 def insert_data(table, columns, df):
     # Create the INSERT INTO SQL query
     cols = ",".join(columns).strip() # Column names for the query, remove any extra spaces
-    placeholders = ", ".join(["%s"] * len(columns)) # Placeholder for parameterized query
-    return (f"INSERT INTO {table} ({cols}) 
-                    VALUES ({placeholders})
-                    ON CONFLICT DO NOTHING;") # Handle conflicts by doing nothing
+    placeholders = ", ".join(["%s"] * len(columns)) # Placeholder for parameterized query, %s for each column
+    query = f"""
+    INSERT INTO {table} ({cols})
+    VALUES ({placeholders});"""
+    return query
     
 # Insert each row into the table
-for _, row in df.iterrows():
-        values = [row[col] for col in columns]
+for table, columns in tables.items(): # Iterate over each table and its columns
+    insert_query = insert_data(table, columns, df) # Get the insert query for the table
+    for _, row in df.iterrows(): # Iterate over each row in the DataFrame
+        values = [] # List to hold the values for the current row
+        for col in columns:
+            values.append(row[col])
         cur.execute(insert_query, values)
+
 # Commit changes and close the connection
 conn.commit() # Commit the transaction
 cur.close() # Close the cursor

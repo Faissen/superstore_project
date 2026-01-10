@@ -1,0 +1,47 @@
+Superstore Database — Instructions for Use
+This repository contains the SQL dump for the Superstore database.
+It includes:
+- Schema creation
+- Dimension tables
+- Fact table
+- Primary and foreign keys
+- Sequences
+
+This file can be used to recreate the database structure on any PostgreSQL installation.
+
+How to Import the Database:
+1. Open the PostgreSQL bin directory. On Windows (PostgreSQL 18 example): cd "C:\Program Files\PostgreSQL\18\bin"
+2. Create an empty database: createdb -U YOUR_USERNAME superstore
+3. Import the SQL file: psql -U YOUR_USERNAME -d superstore -f superstore_full_backup.sql
+After running this command, the database will be fully recreated.
+
+🧱 Database Structure follows a Star Schema design
+
+Dimension Tables:
+- dim_customer
+- dim_date
+- dim_product
+- dim_region
+- dim_ship_mode
+
+Fact Table
+- fact_sales
+
+Relationships
+
+The fact table references all dimensions through foreign keys:
+- customer_id → dim_customer.customer_id
+- product_id → dim_product.product_id
+- region_id → dim_region.region_id
+- date_id → dim_date.date_id
+- ship_mode_id → dim_ship_mode.ship_mode_id
+
+Requirements
+- PostgreSQL 14 or higher (tested with PostgreSQL 18)
+- Permission to create databases
+- Terminal or VS Code with a PostgreSQL extension
+
+📝 Notes
+Replace YOUR_USERNAME with your actual PostgreSQL username (e.g., postgres, admin, or any user you created).
+
+The SQL file can be used to recreate the database structure anywhere.

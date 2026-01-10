@@ -1,12 +1,12 @@
-Project Goal
+Project goal
 
-The objective of this project is to analyze sales performance, customer behavior, and product trends using the Superstore dataset from Kaggle (www.kaggle.com/datasets/rohitsahoo/sales-forecasting).
+The objective of this project is to analyze sales performance, customer behavior and product trends using the Superstore dataset from Kaggle (www.kaggle.com/datasets/rohitsahoo/sales-forecasting).
 
 The project follows a full data‑analytics workflow:
 - Designing a relational database model from raw CSV files
 - Loading and transforming data using Python (ETL)
 - Running analytical SQL queries to uncover insights
-- Building a final interactive dashboard in Tableau or Looker Studio
+- Building a final interactive dashboard in Tableau or Looker Studio (next step)
 
 The analysis focuses on understanding:
 - Sales performance across regions
@@ -20,18 +20,17 @@ Data Modeling Decisions
 This project required designing a relational database schema from a raw CSV file. The goal was to create a clean, normalized structure that supports efficient querying, ensures data integrity, and reflects real‑world analytical workflows. Below is a summary of the key modeling decisions and the reasoning behind each one.
 
 1. Use of Separate Dimension and Fact Tables
-The dataset contains repeated information about customers, products, and geographic locations. To avoid redundancy and improve query performance, the data was normalized based on a star schema into:
+The dataset contains repeated information about customers, products, and geographic locations. To avoid redundancy and improve query performance, the data was normalized based on a star schema consisting of:
 - Dimension tables: customers, products, regions, dates, ship modes
-- Fact table sales
-- Star Schema (https://github.com/Faissen/superstore_project/blob/main/images/Entity%20Relationship%20Diagram_StarSchema_superstore.png) - it allows for fast aggregations and clear relationships between entities.
+- Fact table: sales
+- Star Schema (https://github.com/Faissen/superstore_project/blob/main/images/Entity%20Relationship%20Diagram_StarSchema_superstore.png) - it allows for fast aggregations, clear relationships between entities and efficient analytical queries.
 
 2. Using SERIAL for region_id
-The dataset does not include a natural unique identifier for geographic locations. To ensure each region entry is uniquely identifiable, an artificial key was created. Reasons for this choice:
+The dataset does not include a natural unique identifier for geographic locations. To ensure each region entry is uniquely identifiable, an artificial key  (SERIAL) was created. Reasons:
 - Avoids relying on combinations of city/state/region
 - Simplifies foreign key relationships
 - Ensures consistency even if location names change or contain duplicates
-
-Artificial keys are a standard practice when natural keys are unavailable or unstable.
+- Artificial keys are a standard practice when natural keys are unavailable or unstable.
 
 3. Choosing Between VARCHAR(n) and TEXT
 The schema uses a mix of VARCHAR(n) and TEXT, depending on the nature of each field. 
@@ -48,11 +47,9 @@ Although PostgreSQL treats VARCHAR(n) and TEXT similarly in performance, TEXT wa
 - It makes the schema less explicit
 - It can lead to inconsistent data entry in real‑world scenarios
 
-
 4. Use of Foreign Keys to Enforce Integrity, to ensure that:
 - Every order references a valid customer
 - Every order references a valid region
-- Every order item references a valid order
 - Every order item references a valid product
 
 This prevents orphan records and maintains referential integrity across the database, even as data grows.
@@ -103,7 +100,7 @@ Skills & Competencies Developed
 Throughout this project, I strengthened several key data‑analytics and data‑engineering skills:
 - Designing a relational database schema from raw data
 - Writing SQL queries for aggregation, joins, CTEs, and analytical insights
-- Building ETL pipelines using Python (Pandas + SQLAlchemy)
+- Building ETL pipelines using Python
 - Cleaning, transforming, and loading structured datasets
 - Creating interactive dashboards for business reporting
 - Communicating insights clearly through visualizations and narrative explanations
@@ -139,8 +136,8 @@ Methodology
 - Normalize tables into a relational model
 
 3. ETL (Extract, Transform, Load)
-- Build dimension tables (customers, products, regions)
-- Build fact tables (orders, order_items)
+- Build dimension tables
+- Build fact tables
 - Load cleaned data into PostgreSQL
 
 4. SQL Analysis
@@ -164,11 +161,12 @@ How to Run the Project
 4. Set up the PostgreSQL database
 - Run the SQL schema file to create tables
 - Execute the ETL script to load data
-5. Open the Jupyter Notebook
+5. Open the Jupyter Notebook (optional since the cleaned data is already available)
 - Run the notebook cells to reproduce the analysis.
-
+6. Explore the dashboard (future)
+  
 Visual Summary
 - Sales by Region  (link-to-plot-1)
 - Category Performance  (link-to-plot-2)
 - Customer Segment Analysis  (link-to-plot-3)
-- Tableau Dashboard  (link-to-dashboard-image)
+- Tableau dashboard (future)
